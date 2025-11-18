@@ -1,0 +1,19 @@
+.PHONY: compile run run-gui prepare-deps
+
+compile: prepare-deps
+	@echo "=== [$(DESIGN_NAME)] Compiling HDL files ==="
+	vlog -work $(PRJ_LIB_PATH) $(COMPILE_OPTIONS) $(HDL_FILES) $(TB_FILES)
+
+run:
+	@echo "=== [$(DESIGN_NAME)] Running simulation (CLI) ==="
+	vsim -c $(LIB_NAME).$(TOP_TB) -do "$(PRJ_UTILITY)/simulate.tcl"
+
+prepare-deps:
+ifeq ($(strip $(DEPS)),)
+	@echo "No dependencies."
+else
+	@echo "=== Building dependencies: $(DEPS) ==="
+	for d in $(DEPS); do \
+		$(MAKE) -C $(PRJ_SRC)/$$d compile; \
+	done
+endif
