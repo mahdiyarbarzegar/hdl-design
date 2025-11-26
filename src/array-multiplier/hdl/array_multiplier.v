@@ -1,25 +1,28 @@
 module array_multiplier #(
-  parameter MUL_WIDTH = 4
+  parameter MUL_SIZE = 4
 ) (
-  input  [  MUL_WIDTH-1:0] a_in,
-  input  [  MUL_WIDTH-1:0] b_in,
-  output [2*MUL_WIDTH-1:0] m_out
+  input                   sign,
+  input  [  MUL_SIZE-1:0] a_in,
+  input  [  MUL_SIZE-1:0] b_in,
+  output [2*MUL_SIZE-1:0] m_out
 );
 
-  wire [  MUL_WIDTH-1:0] a[MUL_WIDTH:0];
-  wire [  MUL_WIDTH-1:0] b[MUL_WIDTH:0];
-  wire [  MUL_WIDTH-1:0] c[MUL_WIDTH:0];
-  wire [2*MUL_WIDTH-1:0] p[MUL_WIDTH:0];
+  parameter MID_SIZE = 2 * MUL_SIZE;
 
-  assign a[0] = a_in;
-  assign b[0] = b_in;
-  assign c[0] = {MUL_WIDTH{1'b0}};
-  assign p[0] = {(2 * MUL_WIDTH - 1) {1'b0}};
+  wire [  MID_SIZE-1:0] a[MID_SIZE:0];
+  wire [  MID_SIZE-1:0] b[MID_SIZE:0];
+  wire [  MID_SIZE-1:0] c[MID_SIZE:0];
+  wire [2*MID_SIZE-1:0] p[MID_SIZE:0];
+
+  assign a[0] = sign ? {{MUL_SIZE{a_in[MUL_SIZE-1]}}, a_in} : {{MUL_SIZE{1'b0}}, a_in};
+  assign b[0] = sign ? {{MUL_SIZE{b_in[MUL_SIZE-1]}}, b_in} : {{MUL_SIZE{1'b0}}, b_in};
+  assign c[0] = {MID_SIZE{1'b0}};
+  assign p[0] = {(2 * MID_SIZE - 1) {1'b0}};
 
   genvar i, j;
   generate
-    for (i = 0; i < MUL_WIDTH; i = i + 1) begin : mul_row
-      for (j = 0; j < MUL_WIDTH; j = j + 1) begin : mul_col
+    for (i = 0; i < MID_SIZE; i = i + 1) begin : mul_row
+      for (j = 0; j < MID_SIZE; j = j + 1) begin : mul_col
         mul_slice mul (
           .ai(a[j][i]),
           .bi(b[i][j]),
@@ -32,13 +35,8 @@ module array_multiplier #(
         );
       end
 
-      assign p[i+1][MUL_WIDTH+i] = c[MUL_WIDTH][i];
-      assign m_out[i]            = p[i+1][i];
-
+      assign p[i+1][MID_SIZE+i] = c[MID_SIZE][i];
+      assign m_out[i]           = p[i+1][i];
     end
-
-    assign m_out[2*MUL_WIDTH-1:MUL_WIDTH] = p[MUL_WIDTH][2*MUL_WIDTH-1:MUL_WIDTH];
-
   endgenerate
-
 endmodule
