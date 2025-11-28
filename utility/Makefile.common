@@ -8,6 +8,10 @@ run:
 	@echo "=== [$(DESIGN_NAME)] Running simulation (CLI) ==="
 	vsim -c $(LIB_NAME).$(TOP_TB) -do "$(PRJ_UTILITY)/simulate.tcl"
 
+run-gui:
+	@echo "=== [$(DESIGN_NAME)] Running simulation (GUI) ==="
+	vsim -gui -vopt $(LIB_NAME).$(TOP_GUI) -voptargs=+acc -do "set WAVE_DO_PATH $(WAVE_GUI)" -do "$(PRJ_UTILITY)/simulate_gui.tcl"
+
 prepare-deps:
 ifeq ($(strip $(DEPS)),)
 	@echo "No dependencies."
