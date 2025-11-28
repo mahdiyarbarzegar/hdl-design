@@ -1,2 +1,4 @@
 build/
+transcript
 src/*/transcript
+src/*/vsim.wlf
