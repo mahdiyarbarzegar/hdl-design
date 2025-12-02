@@ -4,11 +4,13 @@ module ripple_carry_adder #(
   input                  add_sub_b,
   input  [BUS_WIDTH-1:0] in1,
   input  [BUS_WIDTH-1:0] in2,
-  output [BUS_WIDTH-1:0] out
+  output [BUS_WIDTH-1:0] out,
+  output                 ovf
 );
 
   wire [BUS_WIDTH:0] carry;
   assign carry[0] = add_sub_b;
+  assign ovf      = carry[BUS_WIDTH] ^ carry[BUS_WIDTH-1];
 
   genvar i;
   generate
