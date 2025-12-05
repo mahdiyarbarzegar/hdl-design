@@ -60,7 +60,7 @@ module tb_restoring_divider;
     #10 start = 'b0;
     @(posedge ready);
     #10;
-    $display("a:%d, b:%d, a / b:%d, a %% b:%d", a, b, q, r);
+    $display("a:%d, b:%d, a / b:%d, a %% b:%d", a, b, q, $signed(r));
     if (q == a / b && r == a % b) begin
       $display("successfull result!");
     end else begin
@@ -74,7 +74,7 @@ module tb_restoring_divider;
     #10 start = 'b0;
     @(posedge ready);
     #10;
-    $display("a:%d, b:%d, a / b:%u, a %% b:%d", a, b, $unsigned(q), r);
+    $display("a:%d, b:%d, a / b:%d, a %% b:%d", a, b, $unsigned(q), $signed(r));
     if (q == a / b && r == a % b) begin
       $display("successfull result!");
     end else begin
@@ -88,7 +88,7 @@ module tb_restoring_divider;
     #10 start = 'b0;
     @(posedge ready);
     #10;
-    $display("a:%d, b:%d, a / b:%d, a %% b:%d", a, b, q, r);
+    $display("a:%d, b:%d, a / b:%d, a %% b:%d", a, b, q, $signed(r));
     if (q == a / b && r == a % b) begin
       $display("successfull result!");
     end else begin
