@@ -7,11 +7,10 @@ module gui_pwm_generator;
   localparam RIGHT_ALIGNED = 2'd0;
   localparam LEFT_ALIGNED = 2'd1;
   localparam CENTER_ALIGNED = 2'd2;
-  localparam VARIABLE_ALIGNED = 2'd3;
 
   reg clk, rst_n, start, stop;
   reg [1:0] mode;
-  reg [TIMER_RESOLUTION-1:0] clk_div, cnt_top, cmp_0, cmp_1;
+  reg [TIMER_RESOLUTION-1:0] clk_div, cnt_top, cmp_0;
   wire pwm;
 
   pwm_generator #(
@@ -25,7 +24,6 @@ module gui_pwm_generator;
     .clk_div(clk_div),
     .cnt_top(cnt_top),
     .cmp_0  (cmp_0),
-    .cmp_1  (cmp_1),
     .pwm_out(pwm)
   );
 
@@ -48,7 +46,6 @@ module gui_pwm_generator;
     clk_div = 1;
     cnt_top = 10;
     cmp_0   = 2;
-    cmp_1   = 8;
     #20;
     start = 0;
     #100;

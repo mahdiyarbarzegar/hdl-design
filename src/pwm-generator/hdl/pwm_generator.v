@@ -9,14 +9,12 @@ module pwm_generator #(
   input  [TIMER_RESOLUTION-1:0] clk_div,  // pwm_clk = clk / [clk_div+1]
   input  [TIMER_RESOLUTION-1:0] cnt_top,
   input  [TIMER_RESOLUTION-1:0] cmp_0,
-  input  [TIMER_RESOLUTION-1:0] cmp_1,
   output                        pwm_out
 );
 
   localparam RIGHT_ALIGNED = 2'd0;
   localparam LEFT_ALIGNED = 2'd1;
   localparam CENTER_ALIGNED = 2'd2;
-  localparam VARIABLE_ALIGNED = 2'd3;
 
   localparam IDLE = 2'd0;
   localparam LOADING = 2'd1;
@@ -49,9 +47,6 @@ module pwm_generator #(
             if (pwm_cnt == cnt_top - 1) pwm_cnt_inc_dec_b = 0;
             if (pwm_cnt == 0) pwm_cnt_inc_dec_b = 1;
           end
-          VARIABLE_ALIGNED: begin
-            pwm_ch = (pwm_cnt < cmp_0_shadow) ? 0 : (pwm_cnt < cmp_1_shadow) ? 1 : 0;
-          end
         endcase
       end
     endcase
@@ -65,16 +60,13 @@ module pwm_generator #(
         pwm_cnt_inc_dec_b <= 1;
         pwm_ch            <= 0;
         cmp_0_shadow      <= 0;
-        cmp_1_shadow      <= 0;
       end
       LOADING: begin
         cmp_0_shadow <= cmp_0;
-        cmp_1_shadow <= cmp_1;
       end
       WORKING: begin
         if (pwm_cnt == 0) begin
           cmp_0_shadow <= cmp_0;
-          cmp_1_shadow <= cmp_1;
         end
 
         clk_cnt <= clk_cnt + 1;
