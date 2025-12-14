@@ -1,15 +1,15 @@
 module pwm_generator #(
   parameter TIMER_RESOLUTION = 32
 ) (
-  input                         clk,
-  input                         rst_n,
-  input                         start,
-  input                         stop,
-  input  [                 1:0] mode,
-  input  [TIMER_RESOLUTION-1:0] clk_div,  // pwm_clk = clk / [clk_div+1]
-  input  [TIMER_RESOLUTION-1:0] cnt_top,
-  input  [TIMER_RESOLUTION-1:0] cmp_0,
-  output                        pwm_out
+  input                             clk,
+  input                             rst_n,
+  input                             start,
+  input                             stop,
+  input      [                 1:0] mode,
+  input      [TIMER_RESOLUTION-1:0] psc,    // clk_cnt = clk / [pcs+1]
+  input      [TIMER_RESOLUTION-1:0] arr,
+  input      [TIMER_RESOLUTION-1:0] ccr_0,
+  output reg                        oc0
 );
 
   localparam RIGHT_ALIGNED = 2'd0;
@@ -23,29 +23,27 @@ module pwm_generator #(
 
   reg [1:0] state, next_state;
 
-  reg [TIMER_RESOLUTION-1:0] cmp_0_shadow, cmp_1_shadow;
+  reg [TIMER_RESOLUTION-1:0] arr_shadow;
+  reg [TIMER_RESOLUTION-1:0] ccr_0_shadow;
   reg [TIMER_RESOLUTION-1:0] clk_cnt;
-  reg [TIMER_RESOLUTION-1:0] pwm_cnt;
-  reg                        pwm_cnt_inc_dec_b;
-  reg                        pwm_ch;
-
-  assign pwm_out = pwm_ch;
+  reg [TIMER_RESOLUTION-1:0] cnt;
+  reg                        cnt_inc_dec_b;
 
   always @(*) begin
     case (state)
-      IDLE: pwm_ch = 0;
+      IDLE: oc0 = 0;
       WORKING: begin
         case (mode)
           RIGHT_ALIGNED: begin
-            pwm_ch = pwm_cnt >= cmp_0_shadow;
+            oc0 = cnt >= ccr_0_shadow;
           end
           LEFT_ALIGNED: begin
-            pwm_ch = pwm_cnt < cmp_0_shadow;
+            oc0 = cnt < ccr_0_shadow;
           end
           CENTER_ALIGNED: begin
-            pwm_ch = pwm_cnt < cmp_0_shadow;
-            if (pwm_cnt == cnt_top - 1) pwm_cnt_inc_dec_b = 0;
-            if (pwm_cnt == 0) pwm_cnt_inc_dec_b = 1;
+            oc0 = cnt < ccr_0_shadow;
+            if (cnt == arr_shadow - 1) cnt_inc_dec_b = 0;
+            if (cnt == 0) cnt_inc_dec_b = 1;
           end
         endcase
       end
@@ -55,29 +53,32 @@ module pwm_generator #(
   always @(posedge clk) begin
     case (state)
       IDLE: begin
-        clk_cnt           <= 0;
-        pwm_cnt           <= 0;
-        pwm_cnt_inc_dec_b <= 1;
-        pwm_ch            <= 0;
-        cmp_0_shadow      <= 0;
+        clk_cnt       <= 0;
+        cnt           <= 0;
+        cnt_inc_dec_b <= 1;
+        oc0           <= 0;
+        arr_shadow    <= 0;
+        ccr_0_shadow  <= 0;
       end
       LOADING: begin
-        cmp_0_shadow <= cmp_0;
+        arr_shadow   <= arr;
+        ccr_0_shadow <= ccr_0;
       end
       WORKING: begin
-        if (pwm_cnt == 0) begin
-          cmp_0_shadow <= cmp_0;
+        if (cnt == 0) begin
+          arr_shadow   <= arr;
+          ccr_0_shadow <= ccr_0;
         end
 
         clk_cnt <= clk_cnt + 1;
-        if (clk_cnt >= clk_div) begin
+        if (clk_cnt >= psc) begin
           clk_cnt <= 0;
 
-          if (pwm_cnt_inc_dec_b) begin
-            pwm_cnt <= pwm_cnt + 1;
-            if (pwm_cnt >= cnt_top - 1) pwm_cnt <= 0;
+          if (cnt_inc_dec_b) begin
+            cnt <= cnt + 1;
+            if (cnt >= arr_shadow - 1) cnt <= 0;
           end else begin
-            pwm_cnt <= pwm_cnt - 1;
+            cnt <= cnt - 1;
           end
         end
       end

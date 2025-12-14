@@ -16,15 +16,15 @@ module gui_pwm_generator;
   pwm_generator #(
     .TIMER_RESOLUTION(TIMER_RESOLUTION)
   ) pwm_gen (
-    .clk    (clk),
-    .rst_n  (rst_n),
-    .start  (start),
-    .stop   (stop),
-    .mode   (mode),
-    .clk_div(clk_div),
-    .cnt_top(cnt_top),
-    .cmp_0  (cmp_0),
-    .pwm_out(pwm)
+    .clk  (clk),
+    .rst_n(rst_n),
+    .start(start),
+    .stop (stop),
+    .mode (mode),
+    .psc  (clk_div),
+    .arr  (cnt_top),
+    .ccr_0(cmp_0),
+    .oc0  (pwm)
   );
 
   initial begin
