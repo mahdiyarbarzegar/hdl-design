@@ -1,20 +1,21 @@
 `timescale 1ns / 10ps
 
+`include "inc/pwm_generator.vh"
+
 module gui_pwm_generator;
 
   localparam TIMER_RESOLUTION = 32;
-
-  localparam RIGHT_ALIGNED = 2'd0;
-  localparam LEFT_ALIGNED = 2'd1;
-  localparam CENTER_ALIGNED = 2'd2;
+  localparam CHANNELS = 2;
 
   reg clk, rst_n, start, stop;
   reg [1:0] mode;
-  reg [TIMER_RESOLUTION-1:0] clk_div, cnt_top, cmp_0;
-  wire pwm;
+  reg [TIMER_RESOLUTION-1:0] clk_div, cnt_top;
+  reg  [CHANNELS-1:0][TIMER_RESOLUTION-1:0] ccr;
+  wire [CHANNELS-1:0]                       pwm;
 
   pwm_generator #(
-    .TIMER_RESOLUTION(TIMER_RESOLUTION)
+    .TIMER_RESOLUTION(TIMER_RESOLUTION),
+    .CHANNELS        (CHANNELS)
   ) pwm_gen (
     .clk  (clk),
     .rst_n(rst_n),
@@ -23,8 +24,8 @@ module gui_pwm_generator;
     .mode (mode),
     .psc  (clk_div),
     .arr  (cnt_top),
-    .ccr0 (cmp_0),
-    .oc0  (pwm)
+    .ccr  (ccr),
+    .oc   (pwm)
   );
 
   initial begin
@@ -45,17 +46,20 @@ module gui_pwm_generator;
     mode    = CENTER_ALIGNED;
     clk_div = 1;
     cnt_top = 10;
-    cmp_0   = 2;
+    ccr[0]  = 2;
+    ccr[1]  = 4;
     #20;
     start = 0;
     #100;
 
     for (i = 0; i < 10; i = i + 1) begin
-      cmp_0 = i;
+      ccr[0] = i;
+      ccr[1] = 10 - i;
       #400;
     end
     for (i = 10; i > 0; i = i - 1) begin
-      cmp_0 = i;
+      ccr[0] = i;
+      ccr[1] = 10 - i;
       #400;
     end
 
