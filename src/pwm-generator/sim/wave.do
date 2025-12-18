@@ -11,6 +11,6 @@ add wave -radix unsigned sim:/gui_pwm_generator/clk_div
 add wave sim:/gui_pwm_generator/pwm_gen/state
 add wave -radix unsigned sim:/gui_pwm_generator/pwm_gen/cnt
 add wave -radix unsigned sim:/gui_pwm_generator/pwm_gen/clk_cnt
-add wave -radix unsigned sim:/gui_pwm_generator/pwm_gen/ccr_0
-add wave -radix unsigned sim:/gui_pwm_generator/pwm_gen/ccr_0_shadow
+add wave -radix unsigned sim:/gui_pwm_generator/pwm_gen/ccr0
+add wave -radix unsigned sim:/gui_pwm_generator/pwm_gen/ccr0_shadow
 add wave -radix unsigned sim:/gui_pwm_generator/pwm_gen/arr

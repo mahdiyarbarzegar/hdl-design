@@ -23,7 +23,7 @@ module gui_pwm_generator;
     .mode (mode),
     .psc  (clk_div),
     .arr  (cnt_top),
-    .ccr_0(cmp_0),
+    .ccr0 (cmp_0),
     .oc0  (pwm)
   );
 

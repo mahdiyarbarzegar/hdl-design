@@ -8,7 +8,7 @@ module pwm_generator #(
   input      [                 1:0] mode,
   input      [TIMER_RESOLUTION-1:0] psc,    // clk_cnt = clk / [pcs+1]
   input      [TIMER_RESOLUTION-1:0] arr,
-  input      [TIMER_RESOLUTION-1:0] ccr_0,
+  input      [TIMER_RESOLUTION-1:0] ccr0,
   output reg                        oc0
 );
 
@@ -24,7 +24,7 @@ module pwm_generator #(
   reg [1:0] state, next_state;
 
   reg [TIMER_RESOLUTION-1:0] arr_shadow;
-  reg [TIMER_RESOLUTION-1:0] ccr_0_shadow;
+  reg [TIMER_RESOLUTION-1:0] ccr0_shadow;
   reg [TIMER_RESOLUTION-1:0] clk_cnt;
   reg [TIMER_RESOLUTION-1:0] cnt;
   reg                        cnt_inc_dec_b;
@@ -35,13 +35,13 @@ module pwm_generator #(
       WORKING: begin
         case (mode)
           RIGHT_ALIGNED: begin
-            oc0 = cnt >= ccr_0_shadow;
+            oc0 = cnt >= ccr0_shadow;
           end
           LEFT_ALIGNED: begin
-            oc0 = cnt < ccr_0_shadow;
+            oc0 = cnt < ccr0_shadow;
           end
           CENTER_ALIGNED: begin
-            oc0 = cnt < ccr_0_shadow;
+            oc0 = cnt < ccr0_shadow;
             if (cnt == arr_shadow - 1) cnt_inc_dec_b = 0;
             if (cnt == 0) cnt_inc_dec_b = 1;
           end
@@ -58,16 +58,16 @@ module pwm_generator #(
         cnt_inc_dec_b <= 1;
         oc0           <= 0;
         arr_shadow    <= 0;
-        ccr_0_shadow  <= 0;
+        ccr0_shadow   <= 0;
       end
       LOADING: begin
-        arr_shadow   <= arr;
-        ccr_0_shadow <= ccr_0;
+        arr_shadow  <= arr;
+        ccr0_shadow <= ccr0;
       end
       WORKING: begin
         if (cnt == 0) begin
-          arr_shadow   <= arr;
-          ccr_0_shadow <= ccr_0;
+          arr_shadow  <= arr;
+          ccr0_shadow <= ccr0;
         end
 
         clk_cnt <= clk_cnt + 1;
