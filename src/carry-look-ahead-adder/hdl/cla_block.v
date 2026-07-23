@@ -1,3 +1,5 @@
+`timescale 1ns / 10ps
+
 module cla_block #(
   parameter BUS_WIDTH = 4
 ) (

@@ -1,3 +1,5 @@
+`timescale 1ns / 10ps
+
 module restoring_divider #(
   parameter DIV_WIDTH = 32
 ) (

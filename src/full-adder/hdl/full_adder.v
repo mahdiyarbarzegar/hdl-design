@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module full_adder (
   input  in1,
   input  in2,

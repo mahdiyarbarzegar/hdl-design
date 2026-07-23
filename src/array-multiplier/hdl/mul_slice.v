@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module mul_slice (
   input  ai,
   input  bi,

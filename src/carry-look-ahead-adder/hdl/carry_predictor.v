@@ -1,3 +1,5 @@
+`timescale 1ns / 10ps
+
 module carry_predictor #(
   parameter CARRY_WIDTH = 4
 ) (

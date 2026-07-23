@@ -1,6 +1,6 @@
 `timescale 1ns / 10ps
 
-`include "inc/pwm_generator.vh"
+`include "pwm_generator.vh"
 
 module gui_pwm_generator;
 

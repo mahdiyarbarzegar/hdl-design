@@ -1,3 +1,5 @@
+`timescale 1ns / 1ns
+
 module MIPS_FourIssue_Controller(
 	input [31:0]I0,
 	input [31:0]I1,

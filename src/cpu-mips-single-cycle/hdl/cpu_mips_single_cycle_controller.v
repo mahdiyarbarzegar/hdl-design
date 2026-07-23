@@ -1,3 +1,5 @@
+`timescale 1ns / 1ns
+
 module MIPS_Controller(
 	input [5:0]Opcode,
 	input [5:0]funct,

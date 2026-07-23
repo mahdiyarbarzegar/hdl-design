@@ -1,3 +1,5 @@
+`timescale 1ns / 1ns
+
 module Issue_Controller(
 	input [31:0]I1,
 	input [31:0]I2,

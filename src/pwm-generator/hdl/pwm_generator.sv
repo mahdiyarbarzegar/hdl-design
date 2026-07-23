@@ -1,4 +1,6 @@
-`include "inc/pwm_generator.vh"
+`timescale 1ns / 10ps
+
+`include "pwm_generator.vh"
 
 module pwm_generator #(
   parameter TIMER_RESOLUTION = 32,

@@ -1,3 +1,5 @@
+`timescale 1ns / 10ps
+
 module carry_look_ahead_adder #(
   parameter BUS_WIDTH       = 32,
   parameter CLA_BLOCK_WIDTH = 4

@@ -1,10 +1,10 @@
 DESIGN_NAME := cpu-mips-pipelined
-HDL_FILES := $(wildcard hdl/*.v)
-TB_FILES := $(wildcard sim/*.v)
+HDL_FILES := $(realpath $(wildcard hdl/*.v))
+TB_FILES := $(realpath $(wildcard sim/*.v))
 TOP_TB := tb_cpu_mips_pipelined
 TOP_GUI :=
 WAVE_GUI :=
 DEPS :=
-COMPILE_OPTIONS :=
+MODELSIM_COMPILE_OPTIONS :=
 
 include $(PRJ_UTILITY)/Makefile.common

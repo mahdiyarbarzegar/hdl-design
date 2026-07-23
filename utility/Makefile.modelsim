@@ -1,0 +1,34 @@
+.PHONY: config compile run run-gui prepare-deps
+
+config:
+	@echo "[CONFIG] Creating modelsim.ini..."
+	mkdir -p $(PRJ_BUILD)
+	cd $(PRJ_BUILD) && vmap -c
+	echo "[CONFIG] Creating library..."
+	cd $(PRJ_BUILD) && vlib $(LIB_NAME)
+	vmap $(LIB_NAME) $(PRJ_LIB_PATH);
+
+compile: prepare-deps
+	@echo "=== [$(DESIGN_NAME)] Compiling HDL files ==="
+	cd $(PRJ_BUILD) && \
+	vlog -work $(PRJ_LIB_PATH) $(MODELSIM_COMPILE_OPTIONS) $(INC_FILES) $(HDL_FILES) $(TB_FILES)
+
+run:
+	@echo "=== [$(DESIGN_NAME)] Running simulation (CLI) ==="
+	cd $(PRJ_BUILD) && \
+	vsim -c $(LIB_NAME).$(TOP_TB) -do "$(PRJ_UTILITY)/modelsim_tb.tcl"
+
+run-gui:
+	@echo "=== [$(DESIGN_NAME)] Running simulation (GUI) ==="
+	cd $(PRJ_BUILD) && \
+	vsim -gui -vopt $(LIB_NAME).$(TOP_GUI) -voptargs=+acc -do "set WAVE_DO_PATH $(WAVE_GUI)" -do "$(PRJ_UTILITY)/modelsim_gui.tcl"
+
+prepare-deps:
+ifeq ($(strip $(DEPS)),)
+	@echo "No dependencies."
+else
+	@echo "=== Building dependencies: $(DEPS) ==="
+	for d in $(DEPS); do \
+		$(MAKE) -C $(PRJ_SRC)/$$d compile; \
+	done
+endif

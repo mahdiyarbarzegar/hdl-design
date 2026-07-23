@@ -1,0 +1,50 @@
+.PHONY: config compile run run-gui prepare-deps
+
+config:
+	@mkdir -p $(PRJ_BUILD)
+	echo "[CONFIG] Creating directory...";
+
+compile: prepare-deps
+	@echo "=== [$(DESIGN_NAME)] Compiling HDL files ==="
+	cd $(PRJ_BUILD) && \
+	xvlog -L $(LIB_NAME)=$(PRJ_LIB_PATH) \
+	        -work $(LIB_NAME)=$(PRJ_LIB_PATH) \
+	        $(INC_FILES) $(HDL_FILES) $(TB_FILES) \
+	        $(XSIM_COMPILE_OPTIONS)
+ifneq ($(strip $(TOP_TB)),)
+	cd $(PRJ_BUILD) && \
+	xelab --debug all \
+		-L $(LIB_NAME)=$(PRJ_LIB_PATH) \
+		--snapshot $(TOP_TB) \
+		$(LIB_NAME).$(TOP_TB) \
+		$(XSIM_ELABORATE_OPTIONS)
+endif
+
+ifneq ($(strip $(TOP_GUI)),)
+	cd $(PRJ_BUILD) && \
+	xelab --debug all \
+		-L $(LIB_NAME)=$(PRJ_LIB_PATH) \
+		--snapshot $(TOP_GUI) \
+		$(LIB_NAME).$(TOP_GUI) \
+		$(XSIM_ELABORATE_OPTIONS)
+endif
+
+run:
+	@echo "=== [$(DESIGN_NAME)] Running simulation (CLI) ==="
+	cd $(PRJ_BUILD) && \
+	xsim $(TOP_TB) --xsimdir $(PRJ_BUILD) --nolog --runall
+
+run-gui:
+	@echo "=== [$(DESIGN_NAME)] Running simulation (GUI) ==="
+	cd $(PRJ_BUILD) && \
+	xsim $(TOP_GUI) --xsimdir $(PRJ_BUILD) --nolog --gui --tclbatch $(PRJ_UTILITY)/xsim_gui.tcl
+
+prepare-deps:
+ifeq ($(strip $(DEPS)),)
+	@echo "No dependencies."
+else
+	@echo "=== Building dependencies: $(DEPS) ==="
+	for d in $(DEPS); do \
+		$(MAKE) -C $(PRJ_SRC)/$$d compile; \
+	done
+endif

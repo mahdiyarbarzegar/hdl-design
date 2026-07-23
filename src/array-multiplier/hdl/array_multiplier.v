@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module array_multiplier #(
   parameter MUL_SIZE = 4
 ) (

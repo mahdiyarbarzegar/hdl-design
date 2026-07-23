@@ -1,3 +1,5 @@
+`timescale 1ns / 10ps
+
 module booth_multiplier #(
   parameter MUL_WIDTH = 4
 ) (

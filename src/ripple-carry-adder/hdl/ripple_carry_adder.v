@@ -1,3 +1,5 @@
+`timescale 1ns / 10ps
+
 module ripple_carry_adder #(
   parameter BUS_WIDTH = 32
 ) (

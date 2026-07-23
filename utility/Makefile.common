@@ -1,23 +1,15 @@
-.PHONY: compile run run-gui prepare-deps
-
-compile: prepare-deps
-	@echo "=== [$(DESIGN_NAME)] Compiling HDL files ==="
-	vlog -work $(PRJ_LIB_PATH) $(COMPILE_OPTIONS) $(INC_FILES) $(HDL_FILES) $(TB_FILES)
-
-run:
-	@echo "=== [$(DESIGN_NAME)] Running simulation (CLI) ==="
-	vsim -c $(LIB_NAME).$(TOP_TB) -do "$(PRJ_UTILITY)/simulate.tcl"
-
-run-gui:
-	@echo "=== [$(DESIGN_NAME)] Running simulation (GUI) ==="
-	vsim -gui -vopt $(LIB_NAME).$(TOP_GUI) -voptargs=+acc -do "set WAVE_DO_PATH $(WAVE_GUI)" -do "$(PRJ_UTILITY)/simulate_gui.tcl"
-
-prepare-deps:
-ifeq ($(strip $(DEPS)),)
-	@echo "No dependencies."
-else
-	@echo "=== Building dependencies: $(DEPS) ==="
-	for d in $(DEPS); do \
-		$(MAKE) -C $(PRJ_SRC)/$$d compile; \
-	done
+ifneq ($(strip $(FORCED_SIMULATOR)),)
+    ifneq ($(HDL_SIMULATOR),$(FORCED_SIMULATOR))
+        $(error Simulator has been forced for a module: $(FORCED_SIMULATOR))
+    endif
 endif
+
+ifeq ($(HDL_SIMULATOR),modelsim)
+    include $(PRJ_UTILITY)/Makefile.modelsim
+else ifeq ($(HDL_SIMULATOR),xsim)
+    include $(PRJ_UTILITY)/Makefile.xsim
+else
+    # Fallback or error handling
+    $(error Unknown HDL_SIMULATOR: $(HDL_SIMULATOR))
+endif
+
